@@ -33,6 +33,8 @@ type libusbDevice struct {
 
 	handle *C.struct_libusb_device_handle // Low level USB device to communicate through
 	lock   sync.Mutex
+	writeTimeout int
+	readTimeout int
 }
 
 // enumerateRawWithRef is the internal device enumerator that retains 1 reference
@@ -226,10 +228,21 @@ func (dev *libusbDevice) Close() error {
 	return nil
 }
 
+
+func (dev *libusbDevice) SetWriteTimeout(timeout int) {
+	dev.writeTimeout = timeout
+}
+
+func (dev *libusbDevice) SetReadTimeout(timeout int) {
+	dev.readTimeout = timeout
+}
+
 // Write sends a binary blob to an USB device.
-func (dev *libusbDevice) Write(b []byte, timeout int) (int, error) {
+func (dev *libusbDevice) Write(b []byte) (int, error) {
 	dev.lock.Lock()
 	defer dev.lock.Unlock()
+
+	timeout := dev.writeTimeout
 
 	switch *dev.writerTransferType {
 	case C.LIBUSB_TRANSFER_TYPE_INTERRUPT:
@@ -242,9 +255,11 @@ func (dev *libusbDevice) Write(b []byte, timeout int) (int, error) {
 }
 
 // Read retrieves a binary blob from an USB device.
-func (dev *libusbDevice) Read(b []byte, timeout int) (int, error) {
+func (dev *libusbDevice) Read(b []byte) (int, error) {
 	dev.lock.Lock()
 	defer dev.lock.Unlock()
+
+	timeout := dev.readTimeout
 
 	switch *dev.readerTransferType {
 	case C.LIBUSB_TRANSFER_TYPE_INTERRUPT:
