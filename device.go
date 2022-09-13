@@ -38,12 +38,20 @@ type DeviceInfo struct {
 	Product      string // Product string
 	UsagePage    uint16 // Usage Page for this Device/Interface (Windows/Mac only)
 	Usage        uint16 // Usage for this Device/Interface (Windows/Mac only)
+	Class        uint8
+	SubClass     uint8
+	Protocol     uint8
 
 	// The USB interface which this logical device
 	// represents. Valid on both Linux implementations
 	// in all cases, and valid on the Windows implementation
 	// only if the device contains more than one interface.
-	Interface int
+	Interface          int
+	InterfaceNumber    int
+	InterfaceAlternate int
+	InterfaceClass     uint8
+	InterfaceSubClass  uint8
+	InterfaceProtocol  uint8
 
 	// Raw low level libusb endpoint data for simplified communication
 	libusbDevice       interface{}

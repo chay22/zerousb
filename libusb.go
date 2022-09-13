@@ -31,10 +31,10 @@ type Context struct {
 type libusbDevice struct {
 	DeviceInfo // Embed the infos for easier access
 
-	handle *C.struct_libusb_device_handle // Low level USB device to communicate through
-	lock   sync.Mutex
+	handle       *C.struct_libusb_device_handle // Low level USB device to communicate through
+	lock         sync.Mutex
 	writeTimeout int
-	readTimeout int
+	readTimeout  int
 }
 
 // enumerateRawWithRef is the internal device enumerator that retains 1 reference
@@ -138,10 +138,13 @@ func getAllDevices(vendorID ID, productID ID) ([]DeviceInfo, error) {
 						C.libusb_ref_device(dev)
 
 						port := uint8(C.libusb_get_port_number(dev))
-						infos = append(infos, DeviceInfo{
+						info := DeviceInfo{
 							Path:               fmt.Sprintf("%04x:%04x:%02d", vendorID, uint16(desc.idProduct), port),
 							VendorID:           uint16(desc.idVendor),
 							ProductID:          uint16(desc.idProduct),
+							Class:              uint8(desc.bDeviceClass),
+							SubClass:           uint8(desc.bDeviceSubClass),
+							Protocol:           uint8(desc.bDeviceProtocol),
 							Interface:          ifacenum,
 							libusbDevice:       dev,
 							libusbPort:         &port,
@@ -149,7 +152,13 @@ func getAllDevices(vendorID ID, productID ID) ([]DeviceInfo, error) {
 							libusbWriter:       writer,
 							readerTransferType: &readerTransferType,
 							writerTransferType: &writerTransferType,
-						})
+
+							InterfaceAlternate: int(alt.bAlternateSetting),
+							InterfaceClass:     uint8(alt.bInterfaceClass),
+							InterfaceSubClass:  uint8(alt.bInterfaceSubClass),
+							InterfaceProtocol:  uint8(alt.bInterfaceProtocol),
+						}
+						infos = append(infos, info)
 					}
 				}
 			}
@@ -227,7 +236,6 @@ func (dev *libusbDevice) Close() error {
 
 	return nil
 }
-
 
 func (dev *libusbDevice) SetWriteTimeout(timeout int) {
 	dev.writeTimeout = timeout
