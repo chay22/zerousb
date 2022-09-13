@@ -1,4 +1,4 @@
 FROM golang:latest
 
-ADD . $GOPATH/src/github.com/mattscamp/zerousb
-RUN cd $GOPATH/src/github.com/mattscamp/zerousb && go install
+ADD . $GOPATH/src/github.com/chay22/zerousb
+RUN cd $GOPATH/src/github.com/chay22/zerousb && go install

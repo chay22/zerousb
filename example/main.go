@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mattscamp/zerousb"
+	"github.com/chay22/zerousb"
 )
 
 const ExampleVendorId = zerousb.ID(0x0483)

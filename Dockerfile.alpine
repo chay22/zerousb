@@ -2,5 +2,5 @@ FROM golang:alpine
 
 RUN apk add --no-cache git gcc musl-dev linux-headers
 
-ADD . $GOPATH/src/github.com/mattscamp/zerousb
-RUN cd $GOPATH/src/github.com/mattscamp/zerousb && go install
+ADD . $GOPATH/src/github.com/chay22/zerousb
+RUN cd $GOPATH/src/github.com/chay22/zerousb && go install
